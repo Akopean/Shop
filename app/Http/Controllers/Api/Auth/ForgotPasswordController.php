@@ -7,11 +7,14 @@ use App\Core\Users\Repositories\UserRepositoryInterface;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ForgotPasswordController extends Controller
 {
+    use SendsPasswordResetEmails;
+
     /**
      * @var UserRepository
      */
@@ -20,6 +23,7 @@ class ForgotPasswordController extends Controller
     public function __construct(UserRepositoryInterface $repository)
     {
         $this->repository = $repository;
+        $this->middleware('guest');
     }
 
     public function sendResetEmail(Request $request)
@@ -28,23 +32,12 @@ class ForgotPasswordController extends Controller
         if(!$user) {
             throw new NotFoundHttpException();
         }
-        $broker = $this->getPasswordBroker();
-        $sendingResponse = $broker->sendResetLink($request->only('email'));
+        $sendingResponse = $this->broker()->sendResetLink($request->only('email'));
         if($sendingResponse !== Password::RESET_LINK_SENT) {
             throw new HttpException(500);
         }
         return response()->json([
             'status' => 'success'
         ], 200);
-    }
-
-    /**
-     * Get the broker to be used during password reset.
-     *
-     * @return \Illuminate\Contracts\Auth\PasswordBroker
-     */
-    private function getPasswordBroker()
-    {
-        return Password::broker();
     }
 }

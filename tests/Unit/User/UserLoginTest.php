@@ -33,7 +33,6 @@ class UserLoginTest extends TestCase
         $resp->assertStatus(422)
             ->assertJsonFragment([
                 "message" => "The given data was invalid.",
-                "status_code" => 422,
             ])->assertJsonValidationErrors(['email', 'password']);
 
         $this->assertGuest();

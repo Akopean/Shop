@@ -2,8 +2,6 @@
 
 namespace Tests\Unit;
 
-use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Core\Users\Repositories\UserRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -28,17 +26,18 @@ class UserRegisterTest extends TestCase
             'name' => 'Test',
             'email' => 'test@email.test',
             'password' => 'password',
-            'role' => 'user',
-            'status' => 'active'
         ]);
 
         $this->assertNotEmpty($user);
 
         $this->assertEquals('Test', $user->name);
         $this->assertEquals('test@email.test', $user->email);
-
+        $this->assertNotEmpty($user->password);
         $this->assertNotEquals('password',  $user->password);
 
         $this->assertTrue($user->isActive());
+
+        $this->assertfalse($user->isAdmin());
+        $this->assertfalse($user->isManager());
     }
 }

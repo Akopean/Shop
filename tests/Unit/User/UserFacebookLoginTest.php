@@ -4,6 +4,7 @@ namespace Tests\Unit\User;
 
 use App\Core\Users\Repositories\UserRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 use Tests\TestCase;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -28,7 +29,6 @@ class UserFacebookLoginTest extends TestCase
         $resp->assertStatus(422)
             ->assertJsonFragment([
                 "message" => "The given data was invalid.",
-                "status_code" => 422,
             ])->assertJsonValidationErrors(['token']);
 
         $this->assertGuest();
@@ -54,6 +54,18 @@ class UserFacebookLoginTest extends TestCase
             ->assertSessionHasNoErrors();
 
         $this->assertAuthenticated();
+
+        $user = auth()->user();
+        $this->assertNotEmpty($user);
+
+        $this->assertEquals('Test', $user->name);
+        $this->assertEquals('facebook@test.email', $user->email);
+        $this->assertEmpty($user->password);
+
+        $this->assertTrue($user->isActive());
+
+        $this->assertfalse($user->isAdmin());
+        $this->assertfalse($user->isManager());
     }
 
     public function testFacebookLoginIfUserRegistered()

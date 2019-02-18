@@ -42,7 +42,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     {
         try {
             $data = collect($params)->except('password')->all();
-            $user = new User($data);
+            $user = User::new($data);
             if (isset($params['password'])) {
                 $user->password = bcrypt($params['password']);
             }

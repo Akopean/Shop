@@ -179,7 +179,6 @@ return [
         /*
          * Modules Service Providers...
          */
-        App\Admin\Providers\AdminServiceProvider::class,
     ],
 
     /*

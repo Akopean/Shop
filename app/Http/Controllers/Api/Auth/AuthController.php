@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api\Auth;
 use App\Core\Auth\Requests\FacebookLoginRequest;
 use App\Core\Auth\Requests\LoginRequest;
 use App\Core\Auth\Requests\SignUpRequest;
-use App\Core\Profile\UserProfile;
 use App\Core\Users\Exceptions\CreateUserInvalidArgumentException;
 use App\Core\Users\Repositories\UserRepository;
 use App\Core\Users\Repositories\UserRepositoryInterface;
@@ -16,7 +15,6 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Lang;
 use Laravel\Socialite\Facades\Socialite;
 use Tymon\JWTAuth\Exceptions\JWTException;
@@ -68,8 +66,6 @@ class AuthController extends ApiController
     {
         $user = $this->repository->createUser($data);
 
-        $user->profile()->save(new UserProfile);
-
         return $user;
     }
 
@@ -95,7 +91,7 @@ class AuthController extends ApiController
 
         try {
             if ($request['rememberMe']) {
-                config(['jwt.ttl', Carbon::now()->addWeeks(1)->diffInMinutes()]);
+                config(['jwt.ttl', Carbon::now()->addWeeks(5)->diffInMinutes()]);
             }
             if (!$token = JWTAuth::attempt($credentials)) {
                 return response()->json([
@@ -115,13 +111,15 @@ class AuthController extends ApiController
             return response()->json(['status' => 'error', 'message' => [Lang::get('user.auth.token.error')]], 500);
         }
 
-        return response([
+        $res =  response([
             'status' => 'success',
             'token_type' => 'Bearer',
             //"scope":"login",
             //"refresh_token":"",
             'expires_in' => auth()->factory()->getTTL()
         ])->header('Authorization', $token);
+
+        return $res;
     }
 
     /**

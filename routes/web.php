@@ -1,10 +1,5 @@
 <?php
 
-Route::prefix('secure')->group(function() {
-    \App\Admin\Providers\Admin::webRoutes();
-
-});
-
 //Route::get('/verification/{verification_code}', 'Api\\Auth\\VerificationController@verify');
 
 Route::get('/{any}', ['uses' => 'SpaController@index'])
@@ -14,8 +9,9 @@ Route::get('/', ['uses' => 'SpaController@index'])
     ->where('any', '.*');
 
 //need fix not exist reset_password route
-
+/*
 Route::get('reset_password/{token}', ['as' => 'password.reset', function($token)
 {
-}]);
+}]);*/
+
 

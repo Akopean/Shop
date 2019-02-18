@@ -26,8 +26,8 @@ class ResetPasswordController extends Controller
     public function resetPassword(ResetPasswordRequest $request, JWTAuth $JWTAuth)
     {
         $response = $this->broker()->reset(
-            $this->credentials($request), function ($customer, $password) {
-            $this->reset($customer, $password);
+            $this->credentials($request), function ($user, $password) {
+            $this->reset($user, $password);
         }
         );
 

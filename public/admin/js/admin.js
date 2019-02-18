@@ -49483,7 +49483,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     redirect: {
                         name: 'Dashboard'
                     },
-                    success: function success() {
+                    success: function success(res) {
+                        console.log(res);
                         this.$store.commit('auth/AUTH_USER');
                     },
                     error: function error(err) {
